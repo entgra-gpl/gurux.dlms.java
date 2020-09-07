@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.entgra.org.gurux</groupId>
+  <artifactId>io.entgra.gurux.dlms.java</artifactId>
+  <version>4.0.23-entgra-v1</version>
+  <packaging>pom</packaging>
+  <name>Entgra Gurux Wrapper</name>
+  <url>http://entgra.io</url>
+  <description>gurux.dlms.java parent pom</description>
+
+  <modules>
+    <module>development</module>
+    <module>gurux.dlms.client.example.java</module>
+    <module>gurux.dlms.push.listener.example</module>
+    <module>gurux.dlms.server.example.java</module>
+    <module>gurux.dlms.server.example2.java</module>
+    <module>gurux.dlms.simulator.java</module>
+    <module>gurux.dlms.xmlClient</module>
+  </modules>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License, version 2</name>
+      <url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+    </license>
+  </licenses>
+  <organization>
+    <url>http://entgra.io</url>
+    <name>Entgra (pvt) Ltd.</name>
+  </organization>
+</project>
