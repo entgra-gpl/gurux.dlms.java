@@ -1,10 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.gurux</groupId>
-  <artifactId>gurux.dlms</artifactId>
-  <version>4.0.23</version>
+  <groupId>io.entgra.org.gurux</groupId>
+  <artifactId>io.entgra.gurux.dlms</artifactId>
   <packaging>jar</packaging>
-  <name>gurux.dlms.java</name>
+  <name>io.entgra.gurux.dlms.java</name>
   <url>http://www.gurux.org</url>
   <description>gurux.dlms.java package is used to communicate with DLMS devices.</description>
   <developers>
@@ -24,6 +24,17 @@
         <picUrl>http://www.gurux.org/images/gurux-avatar.png</picUrl>
       </properties>
     </developer>
+    <developer>
+      <id>Entgra</id>
+      <name>Entgra (pvt) Ltd.</name>
+      <email>dev@entgra.io</email>
+      <url>http://entgra.io</url>
+      <organization>Entgra (pvt) Ltd.</organization>
+      <organizationUrl>http://entgra.io</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
   </developers>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,20 +42,20 @@
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
   <scm>
-    <connection>scm:git:https://github.com/gurux/gurux.dlms.java.git</connection>
-    <url>https://github.com/gurux/gurux.dlms.java/</url>
-    <developerConnection>scm:git:https://github.com/gurux/gurux.dlms.java.git</developerConnection>
-    <tag>v4.0.23</tag>
+    <connection>scm:git:https://github.com/entgra-gpl/gurux.dlms.java.git</connection>
+    <url>https://github.com/entgra-gpl/gurux.dlms.java/</url>
+    <developerConnection>scm:git:https://github.com/entgra-gpl/gurux.dlms.java.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
  <!-- Update component to Central repository. -->
   <distributionManagement>
     <snapshotRepository>
-      <id>nexus-snapshot</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>maven-snapshots</id>
+      <url>http://nexus.entgra.io/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>nexus-releases</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>maven-release</id>
+      <url>http://nexus.entgra.io/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 
@@ -109,16 +120,14 @@
           </plugin>
           <!-- Deployment and release -->
           <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.8</version>
-            <extensions>true</extensions>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.5.1</version>
             <configuration>
-              <serverId>nexus-releases</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <preparationGoals>clean install</preparationGoals>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
             </configuration>
-          </plugin>
+            </plugin>
         </plugins>
       </build>
     </profile>
@@ -140,7 +149,7 @@
     </license>
   </licenses>
   <organization>
-    <url>http://www.gurux.org</url>
-    <name>Gurux Ltd.</name>
+    <url>http://entgra.io</url>
+    <name>Entgra (pvt) Ltd.</name>
   </organization>
 </project>
