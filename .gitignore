@@ -237,3 +237,32 @@ gurux.dlms.client.example.java/dependency-reduced-pom.xml
 gurux.dlms.simulator.java/trace.txt
 gurux.dlms.simulator.java/logFile.txt
 gurux.dlms.simulator.java/dependency-reduced-pom.xml
+
+# Ignore everything in this directory
+target
+.classpath
+.settings
+.project
+*.iml
+*.iws
+*.ipr
+.idea
+*.ids
+.editorconfig
+# Mac crap
+.DS_Store
+
+
+*.class
+*.swp
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
