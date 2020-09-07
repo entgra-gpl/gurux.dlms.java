@@ -47,16 +47,14 @@ import gurux.io.StopBits;
 import gurux.net.GXNet;
 import gurux.serial.GXSerial;
 
-public class sampleclient {
+public class SampleClient {
 
     /**
-     * @param args
-     *            the command line arguments
+     * @param args the command line arguments
      * @throws IOException
      * @throws XMLStreamException
      */
-    public static void main(String[] args)
-            throws XMLStreamException, IOException {
+    public static void main(String[] args) throws XMLStreamException, IOException {
         Settings settings = new Settings();
         GXDLMSReader reader = null;
         try {
@@ -139,6 +137,7 @@ public class sampleclient {
                 reader.readAll(settings.outputFile);
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
             System.exit(1);
         } finally {

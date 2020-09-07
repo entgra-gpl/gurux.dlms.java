@@ -619,10 +619,17 @@ public class GXDLMSReader {
      * @throws Exception
      */
     public Object read(GXDLMSObject item, int attributeIndex) throws Exception {
-        byte[] data = dlms.read(item.getName(), item.getObjectType(),
-                attributeIndex)[0];
         GXReplyData reply = new GXReplyData();
-        readDataBlock(data, reply);
+        if (item instanceof GXDLMSProfileGeneric) {
+            byte[][] data = dlms.readRowsByRange((GXDLMSProfileGeneric) item,
+                    new GXDateTime(2020, 8, 24, 15, 0, 0, 0),
+                    new GXDateTime(new Date()));
+            readDataBlock(data, reply);
+        } else {
+            byte[] data = dlms.read(item.getName(), item.getObjectType(),
+                    attributeIndex)[0];
+            readDataBlock(data, reply);
+        }
         // Update data type on read.
         if (item.getDataType(attributeIndex) == DataType.NONE) {
             item.setDataType(attributeIndex, reply.getValueType());
@@ -722,7 +729,6 @@ public class GXDLMSReader {
      * Read Profile Generic's data by range (start and end time).
      *
      * @param pg
-     * @param sortedItem
      * @param start
      * @param end
      * @return
@@ -869,33 +875,58 @@ public class GXDLMSReader {
         } else if (val instanceof List) {
             StringBuilder sb = new StringBuilder();
             for (Object tmp : (List<?>) val) {
-                if (sb.length() != 0) {
-                    sb.append(", ");
-                }
-                if (tmp instanceof byte[]) {
-                    sb.append(GXCommon.bytesToHex((byte[]) tmp));
-                } else {
-                    sb.append(String.valueOf(tmp));
-                }
+                sb.append(covertToString(tmp));
             }
             val = sb.toString();
         } else if (val != null && val.getClass().isArray()) {
             StringBuilder sb = new StringBuilder();
             for (int pos2 = 0; pos2 != Array.getLength(val); ++pos2) {
-                if (sb.length() != 0) {
-                    sb.append(", ");
-                }
                 Object tmp = Array.get(val, pos2);
-                if (tmp instanceof byte[]) {
-                    sb.append(GXCommon.bytesToHex((byte[]) tmp));
-                } else {
-                    sb.append(String.valueOf(tmp));
-                }
+                sb.append(covertToString(tmp));
             }
             val = sb.toString();
         }
-        writeTrace("Index: " + pos + " Value: " + String.valueOf(val),
-                TraceLevel.INFO);
+        writeTrace("Index: " + pos + " Value: " + val, TraceLevel.INFO);
+    }
+
+    String covertToString(Object obj){
+        if (obj == null) {
+            return "NULL";
+        }
+        StringBuilder sb = new StringBuilder();
+        if (obj instanceof List){
+            for (Object o : (List<?>) obj) {
+                if (sb.length() != 0) {
+                    sb.append(", ");
+                }
+                sb.append(covertToString(o));
+            }
+            if (sb.length() != 0) {
+                sb.append("\n");
+            }
+        } else if (obj.getClass().isArray()) {
+            for (int pos2 = 0; pos2 != Array.getLength(obj); ++pos2) {
+                if (sb.length() != 0) {
+                    sb.append(", ");
+                }
+                Object tmp = Array.get(obj, pos2);
+                sb.append(covertToString(tmp));
+            }
+            if (sb.length() != 0) {
+                sb.append("\n");
+            }
+        } else if (obj instanceof byte[]) {
+            sb.append(GXCommon.bytesToHex((byte[]) obj));
+            sb.append(", ");
+        } else if (obj instanceof Double) {
+            NumberFormat formatter = NumberFormat.getNumberInstance();
+            sb.append(formatter.format(obj));
+            sb.append(", ");
+        } else {
+            sb.append(obj);
+            sb.append(", ");
+        }
+        return sb.toString();
     }
 
     /**
