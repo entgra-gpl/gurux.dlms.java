@@ -6,7 +6,6 @@
     <version>4.0.23-entgra-v1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.entgra.org.gurux</groupId>
   <artifactId>io.entgra.gurux.dlms</artifactId>
   <packaging>jar</packaging>
   <name>io.entgra.gurux.dlms.java</name>
