@@ -1,13 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>io.entgra.org.gurux</groupId>
-    <artifactId>io.entgra.gurux.dlms.java</artifactId>
-    <version>4.0.23-entgra-v1</version>
-  </parent>
+<!--  <parent>-->
+<!--    <groupId>io.entgra.org.gurux</groupId>-->
+<!--    <artifactId>io.entgra.gurux.dlms.java</artifactId>-->
+<!--    <version>4.0.23-entgra-v1</version>-->
+<!--  </parent>-->
   <modelVersion>4.0.0</modelVersion>
+  <groupId>io.entgra.org.gurux</groupId>
   <artifactId>io.entgra.gurux.dlms</artifactId>
-  <packaging>jar</packaging>
+  <version>4.0.23-entgra-v1</version>
+  <packaging>bundle</packaging>
   <name>io.entgra.gurux.dlms.java</name>
   <url>http://www.gurux.org</url>
   <description>gurux.dlms.java package is used to communicate with DLMS devices.</description>
@@ -89,6 +91,33 @@
           <releaseProfiles>releases</releaseProfiles>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>1.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Name>${project.artifactId}</Bundle-Name>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Bundle-Description>GuruX DLMS Consolidated Library</Bundle-Description>
+            <Export-Package>
+              !gurux.dlms.internal,
+              *
+            </Export-Package>
+            <Embed-Transitive>true</Embed-Transitive>
+            <Private-Package>gurux.dlms.internal</Private-Package>
+            <Import-Package>
+              javax.crypto.*,
+              javax.xml.*,
+              javax.swing,
+              org.w3c.dom,
+              org.xml.sax
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -108,20 +137,20 @@
 	            </executions>
 	      </plugin>    
           <!--  Sign the component. -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+<!--          <plugin>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-gpg-plugin</artifactId>-->
+<!--            <version>1.5</version>-->
+<!--            <executions>-->
+<!--              <execution>-->
+<!--                <id>sign-artifacts</id>-->
+<!--                <phase>verify</phase>-->
+<!--                <goals>-->
+<!--                  <goal>sign</goal>-->
+<!--                </goals>-->
+<!--              </execution>-->
+<!--            </executions>-->
+<!--          </plugin>-->
           <!-- Deployment and release -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -143,6 +172,11 @@
       <artifactId>junit</artifactId>
       <version>4.8.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gurux</groupId>
+      <artifactId>gurux.net</artifactId>
+      <version>1.0.21</version>
     </dependency>
   </dependencies>
 
