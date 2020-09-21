@@ -47,7 +47,7 @@ public class GXDLMSAttributeSettings {
     private MethodAccessMode methodAccess = MethodAccessMode.NO_ACCESS;
     private AccessMode access = AccessMode.READ_WRITE;
     private DataType type = DataType.NONE;
-    private GXAttributeCollection parent;
+    transient private GXAttributeCollection parent;
     private String name;
     private int index;
     private int order;

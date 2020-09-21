@@ -62,7 +62,7 @@ import gurux.dlms.internal.GXCommon;
  */
 public class GXDLMSRegister extends GXDLMSObject implements IGXDLMSBase {
     private int scaler;
-    private int unit;
+    private Unit unit;
     private Object objectValue;
 
     /**
@@ -122,7 +122,7 @@ public class GXDLMSRegister extends GXDLMSObject implements IGXDLMSBase {
      * @return Unit of COSEM Register object.
      */
     public final Unit getUnit() {
-        return Unit.forValue(unit);
+        return unit;
     }
 
     /**
@@ -130,7 +130,7 @@ public class GXDLMSRegister extends GXDLMSObject implements IGXDLMSBase {
      *            Unit of COSEM Register object.
      */
     public final void setUnit(final Unit value) {
-        unit = value.getValue();
+        unit = value;
     }
 
     /**
@@ -205,7 +205,7 @@ public class GXDLMSRegister extends GXDLMSObject implements IGXDLMSBase {
     @Override
     public final boolean isRead(final int index) {
         if (index == 3) {
-            return unit != 0;
+            return unit.getValue() != 0;
         }
         return super.isRead(index);
     }
@@ -332,15 +332,15 @@ public class GXDLMSRegister extends GXDLMSObject implements IGXDLMSBase {
             // Set default values.
             if (e.getValue() == null) {
                 scaler = 0;
-                unit = 0;
+                unit = Unit.forValue(0);
             } else {
                 List<?> arr = (List<?>) e.getValue();
                 if (arr == null || arr.size() != 2) {
                     scaler = 0;
-                    unit = 0;
+                    unit = Unit.forValue(0);
                 } else {
                     scaler = ((Number) arr.get(0)).intValue();
-                    unit = (((Number) arr.get(1)).intValue() & 0xFF);
+                    unit = Unit.forValue(((Number) arr.get(1)).intValue() & 0xFF);
                 }
             }
         } else {
@@ -350,14 +350,14 @@ public class GXDLMSRegister extends GXDLMSObject implements IGXDLMSBase {
 
     @Override
     public void load(final GXXmlReader reader) throws XMLStreamException {
-        unit = reader.readElementContentAsInt("Unit", 0);
+        unit = Unit.forValue(reader.readElementContentAsInt("Unit", 0));
         setScaler(reader.readElementContentAsDouble("Scaler", 1));
         setValue(reader.readElementContentAsObject("Value", null, this, 2));
     }
 
     @Override
     public void save(final GXXmlWriter writer) throws XMLStreamException {
-        writer.writeElementString("Unit", unit);
+        writer.writeElementString("Unit", unit.getValue());
         writer.writeElementString("Scaler", getScaler(), 1);
         writer.writeElementObject("Value", getValue(), getDataType(2),
                 getUIDataType(2));

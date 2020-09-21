@@ -24,7 +24,7 @@
             <configuration>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>gurux.dlms.client.sampleclient</mainClass>
+                  <mainClass>gurux.dlms.client.SampleClient</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -50,9 +50,9 @@
       <version>1.0.21</version>
     </dependency>
     <dependency>
-      <groupId>org.gurux</groupId>
-      <artifactId>gurux.dlms</artifactId>
-      <version>4.0.23</version>
+      <groupId>io.entgra.org.gurux</groupId>
+      <artifactId>io.entgra.gurux.dlms</artifactId>
+      <version>4.0.23-entgra-v1</version>
     </dependency>
   </dependencies>
   <licenses>

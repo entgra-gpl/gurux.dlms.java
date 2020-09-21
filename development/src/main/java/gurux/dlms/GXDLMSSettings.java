@@ -74,7 +74,7 @@ public class GXDLMSSettings {
     /**
      * Frame check is skipped for some unit tests. This is internal use only.
      */
-    private boolean skipFrameCheck = false;
+    private boolean skipFrameCheck = true;
     /**
      * Server sender frame sequence starting number.
      */
@@ -509,6 +509,8 @@ public class GXDLMSSettings {
         }
         // This is for unit tests.
         if (skipFrameCheck) {
+            System.out.println(">>>>> Ignoring invalid HDLC Frame: " + Long.toString(frame, 16)
+                    + " Expected: " + Long.toString(expected, 16));
             receiverFrame = frame;
             return true;
         }

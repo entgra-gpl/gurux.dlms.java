@@ -924,6 +924,9 @@ public class GXDLMSProfileGeneric extends GXDLMSObject implements IGXDLMSBase {
 
             for (Object it : (List<?>) e.getValue()) {
                 List<Object> row = (List<Object>) it;
+                if (row.size() == 0) {
+                    continue;
+                }
                 if (row.size() != cols.size()) {
                     throw new RuntimeException(
                             "Number of columns do not match.");
