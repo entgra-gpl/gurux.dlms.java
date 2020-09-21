@@ -1,12 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<!--  <parent>-->
-<!--    <groupId>io.entgra.org.gurux</groupId>-->
-<!--    <artifactId>io.entgra.gurux.dlms.java</artifactId>-->
-<!--    <version>4.0.23-entgra-v1</version>-->
-<!--  </parent>-->
+  <parent>
+    <groupId>io.entgra.org.gurux</groupId>
+    <artifactId>io.entgra.gurux.dlms.java</artifactId>
+    <version>4.0.23-entgra-v1</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.entgra.org.gurux</groupId>
   <artifactId>io.entgra.gurux.dlms</artifactId>
   <version>4.0.23-entgra-v1</version>
   <packaging>bundle</packaging>
@@ -51,7 +50,7 @@
     <connection>scm:git:https://github.com/entgra-gpl/gurux.dlms.java.git</connection>
     <url>https://github.com/entgra-gpl/gurux.dlms.java/</url>
     <developerConnection>scm:git:https://github.com/entgra-gpl/gurux.dlms.java.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v4.0.23</tag>
   </scm>
  <!-- Update component to Central repository. -->
   <distributionManagement>
