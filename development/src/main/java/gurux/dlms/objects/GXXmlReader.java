@@ -195,7 +195,11 @@ public class GXXmlReader implements AutoCloseable {
     }
 
     public final String getAttribute(final int index) {
-        return reader.getAttributeValue(index);
+        if (reader.getAttributeCount() > 0) {
+            return reader.getAttributeValue(index);
+        } else {
+            return "";
+        }
     }
 
     public final int readElementContentAsInt(final String name)
