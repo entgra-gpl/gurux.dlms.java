@@ -49,6 +49,8 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -79,6 +81,9 @@ import gurux.dlms.secure.GXCiphering;
  * This class is used to translate DLMS frame or PDU to xml.
  */
 public class GXDLMSTranslator {
+
+    private static final Log log = LogFactory.getLog(GXDLMSTranslator.class);
+
     HashMap<Integer, String> tags = new HashMap<Integer, String>();
     HashMap<String, Integer> tagsByName = new HashMap<String, Integer>();
 
@@ -1025,7 +1030,7 @@ public class GXDLMSTranslator {
             }
 
         } catch (RuntimeException ex) {
-            System.out.println(ex.getMessage());
+            log.error(ex.getMessage(), ex);
         }
         throw new IllegalArgumentException("Invalid DLMS framing.");
     }

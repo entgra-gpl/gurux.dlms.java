@@ -14,8 +14,13 @@ import gurux.dlms.internal.GXCommon;
 import gurux.dlms.manufacturersettings.GXObisCode;
 import gurux.dlms.objects.GXDLMSObject;
 import gurux.dlms.objects.GXDLMSObjectCollection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GXDLMSConverter {
+
+    private static final Log log = LogFactory.getLog(GXDLMSConverter.class);
+
     /**
      * Collection of standard OBIS codes.
      */
@@ -248,7 +253,7 @@ public class GXDLMSConverter {
                 }
             }
         } else {
-            System.out.println("Unknown OBIS Code: " + it.getLogicalName()
+            log.warn("Unknown OBIS Code: " + it.getLogicalName()
                     + " Type: " + it.getObjectType());
         }
     }

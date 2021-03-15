@@ -58,6 +58,8 @@ import gurux.dlms.objects.GXDLMSCaptureObject;
 import gurux.dlms.objects.GXDLMSObject;
 import gurux.dlms.objects.GXDLMSObjectCollection;
 import gurux.dlms.objects.GXDLMSPushSetup;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class is used to send data notify and push messages to the clients.
@@ -65,6 +67,8 @@ import gurux.dlms.objects.GXDLMSPushSetup;
  * @author Gurux Ltd.
  */
 public class GXDLMSNotify {
+
+    private static final Log log = LogFactory.getLog(GXDLMSNotify.class);
 
     /**
      * DLMS settings.
@@ -491,7 +495,7 @@ public class GXDLMSNotify {
                         items.add(new GXSimpleEntry<GXDLMSObject, Integer>(comp,
                                 ((Number) tmp.get(2)).intValue()));
                     } else {
-                        System.out.println("Unknown object: "
+                        log.info("Unknown object: "
                                 + String.valueOf(classID) + " "
                                 + GXCommon.toLogicalName((byte[]) tmp.get(1)));
                     }

@@ -108,8 +108,10 @@ public class GXPkcs8 {
                     + "key factory not present in runtime");
         }
         try {
+//            PKCS8EncodedKeySpec ecpks =
+//                    new PKCS8EncodedKeySpec(data, tmp.get(0).toString());
             PKCS8EncodedKeySpec ecpks =
-                    new PKCS8EncodedKeySpec(data, tmp.get(0).toString());
+                    new PKCS8EncodedKeySpec(data);
             privateKey = (eckf.generatePrivate(ecpks));
         } catch (InvalidKeySpecException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -186,7 +188,7 @@ public class GXPkcs8 {
      *             IO exception.
      */
     public static GXPkcs8 load(final Path path) throws IOException {
-        return new GXPkcs8(Files.readString(path));
+        return new GXPkcs8(new String(Files.readAllBytes(path)));
     }
 
     /**

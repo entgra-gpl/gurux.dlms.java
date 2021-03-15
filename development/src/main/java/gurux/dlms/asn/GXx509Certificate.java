@@ -27,11 +27,16 @@ import gurux.dlms.asn.enums.X509Certificate;
 import gurux.dlms.enums.BerType;
 import gurux.dlms.internal.GXCommon;
 import gurux.dlms.objects.GXDLMSSecuritySetup;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * x509 Certificate. https://tools.ietf.org/html/rfc5280
  */
 public class GXx509Certificate {
+
+    private static final Log log = LogFactory.getLog(GXx509Certificate.class);
+
     /**
      * This extension identifies the public key being certified.
      */
@@ -213,7 +218,7 @@ public class GXx509Certificate {
                             (boolean) ((GXAsn1Sequence) value).get(0);
                     break;
                 default:
-                    System.out.println("Unknown extensions: " + t.toString());
+                    log.warn("Unknown extensions: " + t.toString());
                 }
             }
         }
@@ -719,7 +724,7 @@ public class GXx509Certificate {
      *             IO exception.
      */
     public static GXx509Certificate load(final Path path) throws IOException {
-        return new GXx509Certificate(Files.readString(path));
+        return new GXx509Certificate(new String(Files.readAllBytes(path)));
     }
 
     /**

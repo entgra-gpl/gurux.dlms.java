@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.entgra.org.gurux</groupId>
   <artifactId>io.entgra.gurux.dlms.java</artifactId>
-  <version>4.0.23-entgra-v1</version>
+  <version>4.0.24-entgra-v1</version>
   <packaging>pom</packaging>
   <name>Entgra Gurux Wrapper</name>
   <url>http://entgra.io</url>

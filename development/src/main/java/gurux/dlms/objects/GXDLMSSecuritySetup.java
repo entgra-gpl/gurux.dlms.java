@@ -77,12 +77,17 @@ import gurux.dlms.objects.enums.SecurityPolicy0;
 import gurux.dlms.objects.enums.SecuritySuite;
 import gurux.dlms.secure.GXDLMSSecureClient;
 import gurux.dlms.secure.GXSecure;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Online help: <br>
  * https://www.gurux.fi/Gurux.DLMS.Objects.GXDLMSSecuritySetup
  */
 public class GXDLMSSecuritySetup extends GXDLMSObject implements IGXDLMSBase {
+
+    private static final Log log = LogFactory.getLog(GXDLMSSecuritySetup.class);
+
     /**
      * Security policy version 1.
      */
@@ -434,17 +439,19 @@ public class GXDLMSSecuritySetup extends GXDLMSObject implements IGXDLMSBase {
         byte[] data = getEphemeralPublicKeyData(type.ordinal(),
                 client.getCiphering().getEphemeralKeyPair().getPublic());
         bb.set(data, 1, 64);
-        System.out.println("Signin public key: " + client.getCiphering()
-                .getSigningKeyPair().getPublic().toString());
-
+        if (log.isTraceEnabled()) {
+            log.trace("Signing public key: " + client.getCiphering()
+                    .getSigningKeyPair().getPublic().toString());
+        }
         // Add signature.
         byte[] sign = GXSecure.getEphemeralPublicKeySignature(type.ordinal(),
                 client.getCiphering().getEphemeralKeyPair().getPublic(),
                 client.getCiphering().getSigningKeyPair().getPrivate());
         bb.set(sign);
-        System.out.println("Data: " + GXCommon.toHex(data));
-        System.out.println("Sign: " + GXCommon.toHex(sign));
-
+        if (log.isTraceEnabled()) {
+            log.trace("Data: " + GXCommon.toHex(data));
+            log.trace("Sign: " + GXCommon.toHex(sign));
+        }
         List<GXSimpleEntry<GlobalKeyType, byte[]>> list =
                 new ArrayList<GXSimpleEntry<GlobalKeyType, byte[]>>();
         list.add(new GXSimpleEntry<GlobalKeyType, byte[]>(type, bb.array()));
@@ -891,8 +898,10 @@ public class GXDLMSSecuritySetup extends GXDLMSObject implements IGXDLMSBase {
                         ka.doPhase(settings.getTargetEphemeralKey(), true);
                         byte[] sharedSecret = ka.generateSecret();
                         settings.getCipher().setSharedSecret(sharedSecret);
-                        System.out.println("Server's shared secret: "
-                                + GXCommon.toHex(sharedSecret));
+                        if (log.isTraceEnabled()) {
+                            log.trace("Server's shared secret: "
+                                    + GXCommon.toHex(sharedSecret));
+                        }
                         GXByteBuffer bb = new GXByteBuffer();
                         data = getEphemeralPublicKeyData(keyId,
                                 eKpS.getPublic());
@@ -902,8 +911,10 @@ public class GXDLMSSecuritySetup extends GXDLMSObject implements IGXDLMSBase {
                                 keyId, eKpS.getPublic(), settings.getCipher()
                                         .getSigningKeyPair().getPrivate());
                         bb.set(tmp2);
-                        System.out.println("Data: " + GXCommon.toHex(data));
-                        System.out.println("Sign: " + GXCommon.toHex(tmp2));
+                        if (log.isTraceEnabled()) {
+                            log.trace("Data: " + GXCommon.toHex(data));
+                            log.trace("Sign: " + GXCommon.toHex(tmp2));
+                        }
                         return bb.array();
                     }
                 }

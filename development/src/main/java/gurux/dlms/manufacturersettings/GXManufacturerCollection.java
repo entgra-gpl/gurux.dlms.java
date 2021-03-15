@@ -55,9 +55,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import gurux.dlms.enums.ObjectType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GXManufacturerCollection
         extends java.util.ArrayList<GXManufacturer> {
+
+    private static final Log log = LogFactory.getLog(GXManufacturerCollection.class);
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -280,7 +285,7 @@ public class GXManufacturerCollection
                                         path + File.separator + it);
                         manufacturers.add(parse(in));
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        log.error(e.getMessage(), e);
                         continue;
                     }
                 }

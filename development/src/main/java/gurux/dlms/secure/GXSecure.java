@@ -67,8 +67,13 @@ import gurux.dlms.enums.Security;
 import gurux.dlms.internal.GXCommon;
 import gurux.dlms.objects.enums.CertificateType;
 import gurux.dlms.objects.enums.SecuritySuite;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public final class GXSecure {
+
+    private static final Log log = LogFactory.getLog(GXSecure.class);
+
     private static final byte[] IV = { (byte) 0xA6, (byte) 0xA6, (byte) 0xA6,
             (byte) 0xA6, (byte) 0xA6, (byte) 0xA6, (byte) 0xA6, (byte) 0xA6 };
 
@@ -466,7 +471,9 @@ public final class GXSecure {
         byte[] sign = instance.sign();
         GXAsn1Sequence tmp2 =
                 (GXAsn1Sequence) GXAsn1Converter.fromByteArray(sign);
-        System.out.println(GXCommon.toHex(sign));
+        if (log.isTraceEnabled()) {
+           log.trace("Sign: " + GXCommon.toHex(sign));
+        }
         GXByteBuffer data = new GXByteBuffer(64);
         // Truncate to 64 bytes. Remove zeros from the begin.
         byte[] arr = ((GXAsn1Integer) tmp2.get(0)).getByteArray();
@@ -499,8 +506,10 @@ public final class GXSecure {
         instance.update(data);
         boolean v = instance.verify(tmp);
         if (!v) {
-            System.out.println("Data: " + GXCommon.toHex(data));
-            System.out.println("Sign: " + GXCommon.toHex(sign));
+            if (log.isTraceEnabled()) {
+                log.trace("Data: " + GXCommon.toHex(data));
+                log.trace("Sign: " + GXCommon.toHex(sign));
+            }
         }
         return v;
     }

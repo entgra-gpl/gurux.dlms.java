@@ -3,7 +3,7 @@
   <parent>
     <groupId>io.entgra.org.gurux</groupId>
     <artifactId>io.entgra.gurux.dlms.java</artifactId>
-    <version>4.0.23-entgra-v1</version>
+    <version>4.0.24-entgra-v1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>io.entgra.gurux.dlms</artifactId>
@@ -103,11 +103,12 @@
             <Bundle-Description>GuruX DLMS Consolidated Library</Bundle-Description>
             <Export-Package>
               !gurux.dlms.internal,
-              *
+              gurux.*
             </Export-Package>
             <Embed-Transitive>true</Embed-Transitive>
             <Private-Package>gurux.dlms.internal</Private-Package>
             <Import-Package>
+              org.apache.commons.logging,
               javax.crypto.*,
               javax.xml.*,
               javax.swing,
@@ -172,7 +173,72 @@
       <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.gurux</groupId>
+      <artifactId>gurux.net</artifactId>
+      <version>1.0.21</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gurux</groupId>
+      <artifactId>gurux.common</artifactId>
+      <version>1.0.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wso2.carbon</groupId>
+      <artifactId>org.wso2.carbon.logging</artifactId>
+      <version>4.4.26</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.log4j.wso2</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.wso2.carbon</groupId>
+          <artifactId>org.wso2.carbon.bootstrap</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>wso2-nexus</id>
+      <name>WSO2 internal Repository</name>
+      <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>ignore</checksumPolicy>
+      </releases>
+    </repository>
+    <repository>
+      <id>wso2.releases</id>
+      <name>WSO2 internal Repository</name>
+      <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>ignore</checksumPolicy>
+      </releases>
+    </repository>
+    <repository>
+      <id>wso2.snapshots</id>
+      <name>WSO2 Snapshot Repository</name>
+      <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
 
   <licenses>
     <license>

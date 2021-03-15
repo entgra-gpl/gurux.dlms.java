@@ -63,12 +63,17 @@ import gurux.dlms.enums.ObjectType;
 import gurux.dlms.internal.GXCommon;
 import gurux.dlms.internal.GXDataInfo;
 import gurux.dlms.objects.enums.SortMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Online help: <br>
  * https://www.gurux.fi/Gurux.DLMS.Objects.GXDLMSProfileGeneric
  */
 public class GXDLMSProfileGeneric extends GXDLMSObject implements IGXDLMSBase {
+
+    private static final Log log = LogFactory.getLog(GXDLMSProfileGeneric.class);
+
     private GXProfileGenericUpdater updater = null;
 
     private ArrayList<Object[]> buffer = new ArrayList<Object[]>();
@@ -980,8 +985,8 @@ public class GXDLMSProfileGeneric extends GXDLMSObject implements IGXDLMSBase {
                                 data = ((Number) data).doubleValue() * scaler;
                                 row.set(colIndex, data);
                             } catch (Exception ex) {
-                                System.out.println("Scalar failed for: "
-                                        + item.getKey().getLogicalName());
+                                log.error("Scalar failed for: "
+                                        + item.getKey().getLogicalName(), ex);
                                 // Skip error
                             }
                         }
@@ -995,8 +1000,8 @@ public class GXDLMSProfileGeneric extends GXDLMSObject implements IGXDLMSBase {
                                 data = ((Number) data).doubleValue() * scaler;
                                 row.set(colIndex, data);
                             } catch (Exception ex) {
-                                System.out.println("Scalar failed for: "
-                                        + item.getKey().getLogicalName());
+                                log.error("Scalar failed for: "
+                                        + item.getKey().getLogicalName(), ex);
                                 // Skip error
                             }
                         }

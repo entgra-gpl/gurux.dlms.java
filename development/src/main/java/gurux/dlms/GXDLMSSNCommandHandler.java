@@ -7,8 +7,6 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -24,10 +22,12 @@ import gurux.dlms.internal.GXCommon;
 import gurux.dlms.internal.GXDataInfo;
 import gurux.dlms.objects.GXDLMSAssociationShortName;
 import gurux.dlms.objects.GXDLMSObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 final class GXDLMSSNCommandHandler {
-    private static final Logger LOGGER =
-            Logger.getLogger(GXDLMSServerBase.class.getName());
+    
+    private static final Log log = LogFactory.getLog(GXDLMSSNCommandHandler.class);
 
     /**
      * Constructor.
@@ -136,8 +136,7 @@ final class GXDLMSSNCommandHandler {
 
         GXByteBuffer bb = new GXByteBuffer();
         if (blockNumber != settings.getBlockIndex()) {
-            LOGGER.log(Level.INFO,
-                    "handleReadBlockNumberAccess failed. Invalid block number. "
+            log.warn("handleReadBlockNumberAccess failed. Invalid block number. "
                             + settings.getBlockIndex() + "/" + blockNumber);
             bb.setUInt8(ErrorCode.DATA_BLOCK_NUMBER_INVALID.getValue());
             GXDLMS.getSNPdu(
@@ -276,8 +275,7 @@ final class GXDLMSSNCommandHandler {
             return;
         }
         if (blockNumber != settings.getBlockIndex()) {
-            LOGGER.log(Level.INFO,
-                    "handleReadDataBlockAccess failed. Invalid block number. "
+            log.warn("handleReadDataBlockAccess failed. Invalid block number. "
                             + settings.getBlockIndex() + "/" + blockNumber);
             bb.setUInt8(ErrorCode.DATA_BLOCK_NUMBER_INVALID.getValue());
             GXDLMS.getSNPdu(
@@ -296,8 +294,7 @@ final class GXDLMSSNCommandHandler {
         int realSize = data.size() - data.position();
         if (count != 1 || type != DataType.OCTET_STRING.getValue()
                 || size != realSize) {
-            LOGGER.log(Level.INFO,
-                    "handleGetRequest failed. Invalid block size.");
+            log.warn("handleGetRequest failed. Invalid block size.");
             bb.setUInt8(ErrorCode.DATA_BLOCK_UNAVAILABLE.getValue());
             GXDLMS.getSNPdu(
                     new GXDLMSSNParameters(settings, command, cnt,
@@ -735,8 +732,7 @@ final class GXDLMSSNCommandHandler {
                         list.add(new GXSimpleEntry<GXDLMSObject, Integer>(
                                 info.getItem(), info.getIndex()));
                     } else {
-                        System.out.println(
-                                "InformationReport message. Unknown object : "
+                        log.warn("InformationReport message. Unknown object : "
                                         + String.valueOf(sn));
                     }
                 }

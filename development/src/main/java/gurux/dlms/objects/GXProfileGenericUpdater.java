@@ -36,11 +36,16 @@ package gurux.dlms.objects;
 
 import gurux.dlms.GXDLMSServerBase;
 import gurux.dlms.internal.AutoResetEvent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /*
  * This class is reserved for internal use. Do not use.
  */
 final class GXProfileGenericUpdater extends Thread {
+
+    private static final Log log = LogFactory.getLog(GXProfileGenericUpdater.class);
+
     private GXDLMSServerBase server;
     private GXDLMSProfileGeneric target;
 
@@ -65,7 +70,7 @@ final class GXProfileGenericUpdater extends Thread {
             try {
                 target.capture(server);
             } catch (Exception ex) {
-                System.out.printf(ex.getMessage());
+                log.error(ex.getMessage(), ex);
             }
         } while (!receivedEvent.waitOne(target.getCapturePeriod() * 1000));
     }

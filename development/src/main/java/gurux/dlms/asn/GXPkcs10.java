@@ -408,7 +408,7 @@ public class GXPkcs10 {
      *             IO exception.
      */
     public static GXPkcs10 load(final Path path) throws IOException {
-        return new GXPkcs10(Files.readString(path));
+        return new GXPkcs10(new String(Files.readAllBytes(path)));
     }
 
     /**

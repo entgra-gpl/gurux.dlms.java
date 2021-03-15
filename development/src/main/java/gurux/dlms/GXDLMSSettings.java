@@ -48,6 +48,8 @@ import gurux.dlms.enums.Standard;
 import gurux.dlms.objects.GXDLMSHdlcSetup;
 import gurux.dlms.objects.GXDLMSObjectCollection;
 import gurux.dlms.objects.GXDLMSTcpUdpSetup;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class includes DLMS communication settings.
@@ -55,6 +57,8 @@ import gurux.dlms.objects.GXDLMSTcpUdpSetup;
  * @author Gurux Ltd.
  */
 public class GXDLMSSettings {
+
+    private static final Log log = LogFactory.getLog(GXDLMSSettings.class);
 
     /**
      * The version can be used for backward compatibility.
@@ -74,7 +78,7 @@ public class GXDLMSSettings {
     /**
      * Frame check is skipped for some unit tests. This is internal use only.
      */
-    private boolean skipFrameCheck = true;
+    private boolean skipFrameCheck = false;
     /**
      * Server sender frame sequence starting number.
      */
@@ -515,12 +519,12 @@ public class GXDLMSSettings {
         }
         // This is for unit tests.
         if (skipFrameCheck) {
-            System.out.println(">>>>> Ignoring invalid HDLC Frame: " + Long.toString(frame, 16)
+            log.warn(">>>>> Ignoring invalid HDLC Frame: " + Long.toString(frame, 16)
                     + " Expected: " + Long.toString(expected, 16));
             receiverFrame = frame;
             return true;
         }
-        System.out.println("Invalid HDLC Frame: " + Long.toString(frame, 16)
+        log.error("Invalid HDLC Frame: " + Long.toString(frame, 16)
                 + " Expected: " + Long.toString(expected, 16));
         return false;
     }

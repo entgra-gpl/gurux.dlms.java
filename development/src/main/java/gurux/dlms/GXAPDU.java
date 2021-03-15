@@ -54,6 +54,8 @@ import gurux.dlms.enums.SourceDiagnostic;
 import gurux.dlms.internal.GXCommon;
 import gurux.dlms.secure.AesGcmParameter;
 import gurux.dlms.secure.GXCiphering;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * The services to access the attributes and methods of COSEM objects are
@@ -66,6 +68,8 @@ import gurux.dlms.secure.GXCiphering;
  * </p>
  */
 final class GXAPDU {
+
+    private static final Log log = LogFactory.getLog(GXAPDU.class);
 
     /**
      * Constructor.
@@ -1190,7 +1194,7 @@ final class GXAPDU {
                 break;
             default:
                 // Unknown tags.
-                System.out.println("Unknown tag: " + tag + ".");
+                log.info("Unknown tag: " + tag + ".");
                 if (buff.position() < buff.size()) {
                     len = buff.getUInt8();
                     buff.position(buff.position() + len);

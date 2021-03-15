@@ -1,11 +1,5 @@
 package gurux.dlms;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import gurux.dlms.enums.AccessMode;
 import gurux.dlms.enums.AccessServiceCommandType;
 import gurux.dlms.enums.Command;
@@ -21,10 +15,16 @@ import gurux.dlms.objects.GXDLMSObject;
 import gurux.dlms.objects.GXDLMSProfileGeneric;
 import gurux.dlms.objects.GXDLMSSecuritySetup;
 import gurux.dlms.objects.enums.AssociationStatus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 final class GXDLMSLNCommandHandler {
-    private static final Logger LOGGER =
-            Logger.getLogger(GXDLMSServerBase.class.getName());
+    
+    private static final Log log = LogFactory.getLog(GXDLMSLNCommandHandler.class);    
 
     /**
      * Constructor.
@@ -70,8 +70,7 @@ final class GXDLMSLNCommandHandler {
                 getRequestWithList(settings, invokeID, server, data, replyData,
                         xml, cipheredCommand);
             } else {
-                LOGGER.log(Level.INFO,
-                        "HandleGetRequest failed. Invalid command type.");
+                log.info("HandleGetRequest failed. Invalid command type.");
                 GXDLMS.getLNPdu(new GXDLMSLNParameters(settings, invokeID,
                         Command.GET_RESPONSE, type, null, null,
                         ErrorCode.HARDWARE_FAULT.getValue(), cipheredCommand),
@@ -83,7 +82,7 @@ final class GXDLMSLNCommandHandler {
                 xml.appendEndTag(Command.GET_REQUEST);
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, ex.getMessage());
+            log.error( ex.getMessage(), ex);
             GXDLMS.getLNPdu(new GXDLMSLNParameters(settings, invokeID,
                     Command.GET_RESPONSE, type, null, null,
                     ErrorCode.HARDWARE_FAULT.getValue(), cipheredCommand),
@@ -136,7 +135,7 @@ final class GXDLMSLNCommandHandler {
                     replyData, xml);
             break;
         default:
-            LOGGER.log(Level.INFO, "HandleSetRequest failed. Unknown command.");
+            log.warn( "HandleSetRequest failed. Unknown command.");
             settings.resetBlockIndex();
             p.setStatus(ErrorCode.HARDWARE_FAULT.getValue());
             break;
@@ -335,8 +334,7 @@ final class GXDLMSLNCommandHandler {
                 return;
             }
             if (index != settings.getBlockIndex()) {
-                LOGGER.log(Level.INFO,
-                        "getRequestNextDataBlock failed. Invalid block number. "
+                log.warn("getRequestNextDataBlock failed. Invalid block number. "
                                 + settings.getBlockIndex() + "/" + index);
                 GXDLMS.getLNPdu(new GXDLMSLNParameters(settings, invokeID,
                         Command.GET_RESPONSE, 2, null, bb,
@@ -530,8 +528,7 @@ final class GXDLMSLNCommandHandler {
             p.setMultipleBlocks(lastBlock == 0);
             long blockNumber = data.getUInt32();
             if (blockNumber != settings.getBlockIndex()) {
-                LOGGER.log(Level.INFO,
-                        "handleSetRequest failed. Invalid block number. "
+                log.warn("handleSetRequest failed. Invalid block number. "
                                 + settings.getBlockIndex() + "/" + blockNumber);
                 p.setStatus(ErrorCode.DATA_BLOCK_NUMBER_INVALID.getValue());
                 return;
@@ -540,8 +537,7 @@ final class GXDLMSLNCommandHandler {
             int size = GXCommon.getObjectCount(data);
             int realSize = data.size() - data.position();
             if (size != realSize) {
-                LOGGER.log(Level.INFO,
-                        "handleSetRequest failed. Invalid block size.");
+                log.warn("handleSetRequest failed. Invalid block size.");
                 p.setStatus(ErrorCode.DATA_BLOCK_UNAVAILABLE.getValue());
                 return;
             }
@@ -642,8 +638,7 @@ final class GXDLMSLNCommandHandler {
         p.setMultipleBlocks(lastBlock == 0);
         long blockNumber = data.getUInt32();
         if (xml == null && blockNumber != settings.getBlockIndex()) {
-            LOGGER.log(Level.INFO,
-                    "handleSetRequest failed. Invalid block number. "
+            log.warn("handleSetRequest failed. Invalid block number. "
                             + settings.getBlockIndex() + "/" + blockNumber);
             p.setStatus(ErrorCode.DATA_BLOCK_NUMBER_INVALID.getValue());
         } else {
@@ -651,8 +646,7 @@ final class GXDLMSLNCommandHandler {
             int size = GXCommon.getObjectCount(data);
             int realSize = data.size() - data.position();
             if (size != realSize) {
-                LOGGER.log(Level.INFO,
-                        "handleSetRequest failed. Invalid block size.");
+                log.warn("handleSetRequest failed. Invalid block size.");
                 p.setStatus(ErrorCode.DATA_BLOCK_UNAVAILABLE.getValue());
             }
             if (xml != null) {
@@ -1136,8 +1130,7 @@ final class GXDLMSLNCommandHandler {
                 list.add(new GXSimpleEntry<GXDLMSObject, Integer>(obj,
                         (int) index));
             } else {
-                System.out
-                        .println("InformationReport message. Unknown object : "
+                log.info("InformationReport message. Unknown object : "
                                 + String.valueOf(ObjectType.forValue(ci)) + " "
                                 + GXCommon.toLogicalName(ln));
             }
