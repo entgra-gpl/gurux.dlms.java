@@ -33,6 +33,9 @@
 //---------------------------------------------------------------------------
 package gurux.dlms.client;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,19 +45,26 @@ import gurux.common.GXCommon;
 import gurux.common.IGXMedia;
 import gurux.common.enums.TraceLevel;
 import gurux.dlms.GXDLMSClient;
+import gurux.dlms.GXDLMSTranslator;
 import gurux.dlms.GXSimpleEntry;
+import gurux.dlms.asn.GXAsn1Converter;
+import gurux.dlms.asn.GXPkcs8;
+import gurux.dlms.asn.GXx509Certificate;
+import gurux.dlms.asn.enums.KeyUsage;
 import gurux.dlms.enums.Authentication;
 import gurux.dlms.enums.InterfaceType;
 import gurux.dlms.enums.Security;
 import gurux.dlms.enums.Standard;
 import gurux.dlms.secure.GXDLMSSecureClient;
+import gurux.io.BaudRate;
+import gurux.io.Parity;
+import gurux.io.StopBits;
 import gurux.net.GXNet;
 import gurux.serial.GXSerial;
 
 public class Settings {
     public IGXMedia media = null;
     public TraceLevel trace = TraceLevel.INFO;
-    public boolean iec = false;
     public GXDLMSSecureClient client = new GXDLMSSecureClient(true);
     String invocationCounter;
     // Objects to read.
@@ -75,16 +85,15 @@ public class Settings {
         System.out.println(" -h \t host name or IP address.");
         System.out.println(" -p \t port number or name (Example: 1000).");
         System.out.println(" -S \t serial port.");
-        System.out.println(" -i IEC is a start protocol.");
         System.out.println(
                 " -a \t Authentication (None, Low, High, HighMd5, HighSha1, HighGMac, HighSha256).");
         System.out.println(" -P \t Password for authentication.");
         System.out.println(" -c \t Client address. (Default: 16)");
         System.out.println(" -s \t Server address. (Default: 1)");
         System.out.println(" -n \t Server address as serial number.");
+        System.out.println(" -l \t Logical Server address.");
         System.out.println(
                 " -r [sn, ln]\t Short name or Logical Name (default) referencing is used.");
-        System.out.println(" -w WRAPPER profile is used. HDLC is default.");
         System.out
                 .println(" -t [Error, Warning, Info, Verbose] Trace messages.");
         System.out.println(
@@ -106,6 +115,13 @@ public class Settings {
                 " -D \t Dedicated key that is used with chiphering. Ex -D 00112233445566778899AABBCCDDEEFF");
         System.out.println(
                 " -d \t Used DLMS standard. Ex -d India (DLMS, India, Italy, SaudiArabia, IDIS)");
+        System.out.println(
+                " -K \t Meter's private key File. Ex. -k C:\\priv.pem");
+        System.out
+                .println(" -k \t Client's public key File. Ex. -k C:\\pub.pem");
+        System.out.println(
+                " -i \t Used communication interface. Ex. -i WRAPPER.");
+        System.out.println(" -m \t Used PLC MAC address. Ex. -m 1.");
         System.out.println("Example:");
         System.out.println("Read LG device using TCP/IP connection.");
         System.out.println(
@@ -118,15 +134,16 @@ public class Settings {
 
     }
 
-    static int getParameters(String[] args, Settings settings) {
+    static int getParameters(String[] args, Settings settings)
+            throws IOException {
         List<GXCmdParameter> parameters = GXCommon.getParameters(args,
-                "h:p:c:s:r:iIt:a:p:wP:g:S:n:C:v:o:T:A:B:D:d:");
+                "h:p:c:s:r:i:It:a:pP:g:S:n:C:v:o:T:A:B:D:d:l:K:k:");
         GXNet net = null;
+        // Has user give the custom serial port settings or are the default
+        // values used in mode E.
+        boolean modeEDefaultValues = true;
         for (GXCmdParameter it : parameters) {
             switch (it.getTag()) {
-            case 'w':
-                settings.client.setInterfaceType(InterfaceType.WRAPPER);
-                break;
             case 'r':
                 if ("sn".compareTo(it.getValue()) == 0) {
                     settings.client.setUseLogicalNameReferencing(false);
@@ -173,9 +190,32 @@ public class Settings {
             case 'P':// Password
                 settings.client.setPassword(it.getValue().getBytes());
                 break;
-            case 'i':
-                // IEC.
-                settings.iec = true;
+            case 'i':// Interface type.
+                if ("HDLC".equalsIgnoreCase(it.getValue()))
+                    settings.client.setInterfaceType(InterfaceType.HDLC);
+                else if ("WRAPPER".equalsIgnoreCase(it.getValue()))
+                    settings.client.setInterfaceType(InterfaceType.WRAPPER);
+                else if ("HdlcWithModeE".equalsIgnoreCase(it.getValue()))
+                    settings.client
+                            .setInterfaceType(InterfaceType.HDLC_WITH_MODE_E);
+                else if ("Plc".equalsIgnoreCase(it.getValue()))
+                    settings.client.setInterfaceType(InterfaceType.PLC);
+                else if ("PlcHdlc".equalsIgnoreCase(it.getValue()))
+                    settings.client.setInterfaceType(InterfaceType.PLC_HDLC);
+                else
+                    throw new IllegalArgumentException(
+                            "Invalid interface type option." + it.getValue()
+                                    + " (HDLC, WRAPPER, HdlcWithModeE, Plc, PlcHdlc)");
+
+                if (modeEDefaultValues && settings.client
+                        .getInterfaceType() == InterfaceType.HDLC_WITH_MODE_E) {
+                    GXSerial serial = (GXSerial) settings.media;
+                    serial.setBaudRate(BaudRate.BAUD_RATE_300);
+                    serial.setDataBits(7);
+                    serial.setParity(Parity.EVEN);
+                    serial.setStopBits(StopBits.ONE);
+                }
+                settings.client.getPlc().reset();
                 break;
             case 'I':
                 // AutoIncreaseInvokeID.
@@ -216,6 +256,40 @@ public class Settings {
                 settings.client.getCiphering()
                         .setDedicatedKey(GXCommon.hexToBytes(it.getValue()));
                 break;
+            case 'K':
+                GXPkcs8 cert1 = GXPkcs8.load(new File(it.getValue()).toPath());
+                settings.client.getCiphering().setSigningKeyPair(new KeyPair(
+                        cert1.getPublicKey(), cert1.getPrivateKey()));
+                System.out.println("Client Private key: " + GXDLMSTranslator
+                        .toHex(cert1.getPrivateKey().getEncoded()));
+                System.out.println("Client Public key: " + GXDLMSTranslator
+                        .toHex(GXAsn1Converter.toUIn64(cert1.getPublicKey())));
+                break;
+            case 'k':
+                GXx509Certificate cert = GXx509Certificate
+                        .load(new File(it.getValue()).toPath());
+                if (!cert.getKeyUsage().contains(KeyUsage.DIGITAL_SIGNATURE)
+                        && !cert.getKeyUsage()
+                                .contains(KeyUsage.KEY_AGREEMENT)) {
+                    throw new IllegalArgumentException(
+                            "This certificate is not used for digital signature or key agreement.");
+                }
+                settings.client.getCiphering().getCertificates().add(cert);
+
+                String[] sn = cert.getSubject().split("=");
+                if (sn.length != 2) {
+                    throw new IllegalArgumentException(
+                            "Invalid public key subject.");
+                }
+                settings.client.getCiphering()
+                        .setSystemTitle(GXDLMSTranslator.hexToBytes(sn[1]));
+                System.out.println("Server Public key: " + GXDLMSTranslator
+                        .toHex(GXAsn1Converter.toUIn64(cert.getPublicKey())));
+                settings.client.getCiphering()
+                        .setSigningKeyPair(new KeyPair(cert.getPublicKey(),
+                                settings.client.getCiphering()
+                                        .getSigningKeyPair().getPrivate()));
+                break;
             case 'o':
                 settings.outputFile = it.getValue();
                 break;
@@ -255,7 +329,43 @@ public class Settings {
             case 'S':// Serial Port
                 settings.media = new GXSerial();
                 GXSerial serial = (GXSerial) settings.media;
-                serial.setPortName(it.getValue());
+                String[] tmp = it.getValue().split("[:]");
+                serial.setPortName(tmp[0]);
+                if (tmp.length > 1) {
+                    modeEDefaultValues = false;
+                    serial.setBaudRate(
+                            BaudRate.forValue(Integer.parseInt(tmp[1])));
+                    serial.setDataBits(
+                            Integer.parseInt(tmp[2].substring(0, 1)));
+                    String parity = tmp[2].substring(1, tmp[2].length() - 1);
+                    if ("NONE".equalsIgnoreCase(parity)) {
+                        serial.setParity(Parity.NONE);
+                    } else if ("ODD".equalsIgnoreCase(parity)) {
+                        serial.setParity(Parity.ODD);
+                    } else if ("EVEN".equalsIgnoreCase(parity)) {
+                        serial.setParity(Parity.EVEN);
+                    } else if ("MARK".equalsIgnoreCase(parity)) {
+                        serial.setParity(Parity.MARK);
+                    } else if ("SPACE".equalsIgnoreCase(parity)) {
+                        serial.setParity(Parity.SPACE);
+                    }
+                    serial.setStopBits(StopBits.values()[Integer.parseInt(
+                            tmp[2].substring(tmp[2].length() - 1)) - 1]);
+
+                } else {
+                    if (settings.client
+                            .getInterfaceType() == InterfaceType.HDLC_WITH_MODE_E) {
+                        serial.setBaudRate(BaudRate.BAUD_RATE_300);
+                        serial.setDataBits(7);
+                        serial.setParity(Parity.EVEN);
+                        serial.setStopBits(StopBits.ONE);
+                    } else {
+                        serial.setBaudRate(BaudRate.BAUD_RATE_9600);
+                        serial.setDataBits(8);
+                        serial.setParity(Parity.NONE);
+                        serial.setStopBits(StopBits.ONE);
+                    }
+                }
                 break;
             case 'a':
                 try {
@@ -264,7 +374,7 @@ public class Settings {
                 } catch (Exception e) {
                     throw new IllegalArgumentException(
                             "Invalid Authentication option: '" + it.getValue()
-                                    + "'. (None, Low, High, HighMd5, HighSha1, HighGmac, HighSha256)");
+                                    + "'. (None, Low, High, HighMd5, HighSha1, HighGmac, HighSha256, HighECDSA)");
                 }
                 break;
             case 'c':
@@ -272,8 +382,20 @@ public class Settings {
                         .setClientAddress(Integer.parseInt(it.getValue()));
                 break;
             case 's':
-                settings.client
-                        .setServerAddress(Integer.parseInt(it.getValue()));
+                if (settings.client.getServerAddress() != 1) {
+                    settings.client
+                            .setServerAddress(GXDLMSClient.getServerAddress(
+                                    settings.client.getServerAddress(),
+                                    Integer.parseInt(it.getValue())));
+                } else {
+                    settings.client
+                            .setServerAddress(Integer.parseInt(it.getValue()));
+                }
+                break;
+            case 'l':
+                settings.client.setServerAddress(GXDLMSClient.getServerAddress(
+                        Integer.parseInt(it.getValue()),
+                        settings.client.getServerAddress()));
                 break;
             case 'n':
                 settings.client.setServerAddress(GXDLMSClient
@@ -329,6 +451,15 @@ public class Settings {
                 case 'd':
                     throw new IllegalArgumentException(
                             "Missing mandatory DLMS standard option.");
+                case 'K':
+                    throw new IllegalArgumentException(
+                            "Missing mandatory private key file option.");
+                case 'k':
+                    throw new IllegalArgumentException(
+                            "Missing mandatory public key file option.");
+                case 'l':
+                    throw new IllegalArgumentException(
+                            "Missing mandatory logical server address option.");
                 default:
                     showHelp();
                     return 1;
@@ -338,7 +469,9 @@ public class Settings {
                 return 1;
             }
         }
-        if (settings.media == null) {
+        if (settings.media == null)
+
+        {
             showHelp();
             return 1;
         }
